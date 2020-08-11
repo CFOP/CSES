@@ -4,11 +4,6 @@ using namespace std;
 string a;
 
 bool visited[10][10];
-long long s[10][10];
-int Y[10]; //y
-int X[10]; //x
-int d[20]; //x+y | x+y+1
-int d2[20]; // y-x+6 | 7-abs(y-x)
 
 long long bsk(int i=0, int x=0, int y=0){
     if(x<0 || x==7 || y<0 ||y==7)
@@ -19,75 +14,58 @@ long long bsk(int i=0, int x=0, int y=0){
         //cout<<i<<"\n";
         return i==48;
     }
-    Y[y]++;
-    if(Y[y]==7 && y>0){
-        //for(int i=0; i<y; i++)
-            if(Y[y-1]<7){
-                Y[y]--;
+
+    if(x>0 && x<6 && y>0 && y<6){
+        if(visited[y-1][x] && visited[y+1][x] && !visited[y][x+1] && !visited[y][x-1])
+            return 0;
+        if(!visited[y-1][x] && !visited[y+1][x] && visited[y][x+1] && visited[y][x-1])
+            return 0;
+    }
+    else {
+        if(x>0 && x<6 && y==0){
+            if(visited[y+1][x] && !visited[y][x+1] && !visited[y][x-1])
                 return 0;
-            }
-    }
-
-    X[x]++;
-    if(X[x]==7 && x<6){
-        //for(int i=x+1; i<7; i++)
-        //int i=x+1;
-        if(X[x+1]<7){
-            X[x]--;
-            Y[y]--;
+        }
+        if(x>0 && x<6 && y==6){
+            if(visited[y-1][x] && !visited[y][x+1] && !visited[y][x-1])
+                return 0;
+        }
+        if(y>0 && y<6 && x==0){
+            if(!visited[y-1][x] && !visited[y+1][x] && visited[y][x+1])
+            return 0;
+        }
+        if(y>0 && y<6 && x==6){
+            if(!visited[y-1][x] && !visited[y+1][x] && visited[y][x-1])
             return 0;
         }
     }
-
-    d[x+y]++;
-    if(d[x+y]==x+y+1 && x+y>0){
-        if(d[x+y-1]<x+y){
-            X[x]--;
-            Y[y]--;
-            d[x+y]--;
-            return 0;
-        }
-    }
-
-    d2[y-x+6]++;
-    if(d[y-x+6]==7-abs(y-x) && y-x+6<12){
-        int k = y-x;
-        if(k>=0) k=1;
-        else k=-1;
-        if(d[y-x+7]<7-abs(y-x) + k){
-            X[x]--;
-            Y[y]--;
-            d[x+y]--;
-            d2[y-x+6]--;
-            return 0;
-        }
-    }
-
-    //cout<<x<<" "<<y<<"\n";
-    //cout<<a[i]<<" ";
 
     visited[y][x] = true;
     long long sum=0;
-    if(a[i]=='D')
+    if(a[i]=='D' && !visited[y+1][x])
         sum = bsk(i+1, x, y+1);
-    else if(a[i]=='U')
+    else if(a[i]=='U' && !visited[y-1][x])
         sum = bsk(i+1, x, y-1);
-    else if(a[i]=='L')
+    else if(a[i]=='L' && !visited[y][x-1])
         sum = bsk(i+1, x-1, y);
-    else if(a[i]=='R')
+    else if(a[i]=='R' && !visited[y][x+1])
         sum = bsk(i+1, x+1, y);
-    else
+    else if(a[i]=='?'){
         sum = bsk(i+1, x, y-1)+ bsk(i+1, x, y+1)+bsk(i+1, x-1, y)+bsk(i+1, x+1, y);
+    }
     visited[y][x] = false;
-    X[x]--;
-    Y[y]--;
+
     return sum;
 }
 
 int main(){
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
     cin>>a;
     cout<<bsk()<<"\n";
+    //cout<<k<<"\n";
     return 0;
 }
 
 //??????R??????U??????????????????????????LD????D?
+//????????????????????????????????????????????????
