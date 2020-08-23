@@ -12,7 +12,7 @@ int main(){
     }
     sort(a.begin(), a.end());
     for(int i=0; i<n; i++){
-        int j = i+1; int k = n-1;it
+        int j = i+1; int k = n-1;
         while(j<k){
             if(a[i].first+a[j].first+a[k].first == x){
                 cout<<a[i].second<<" "<<a[j].second<<" "<<a[k].second<<"\n";
