@@ -1,7 +1,6 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-
 typedef long long ull;
 queue <int> q;
 
