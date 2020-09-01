@@ -1,8 +1,11 @@
 #include <bits/stdc++.h>
 using namespace std;
+#define MAX 200010
 
-map<long long, long long, greater<long long>> dp; //time, money
-set <pair<pair<long long, long long>, long long>> project; //end, start, reward
+typedef long long ull;
+
+vector<tuple<int, int, ull>> project; //end, start, reward
+ull dp[MAX];
 
 int main(){
     ios_base::sync_with_stdio(0);
@@ -13,34 +16,20 @@ int main(){
     for(int i=0; i<n; i++){
         long long a, b, p;
         cin>>a>>b>>p;
-        project.insert( { {b, a}, p} );
+        project.push_back(make_tuple(b, a, p));
+    }
+    sort(project.begin(), project.end());
+
+    dp[0] = get<2>(project[0]);
+    for(int i=1; i<n; i++){
+        ull s = get<1>(project[i]), r = get<2>(project[i]);
+        int last = lower_bound(project.begin(), project.end(), make_tuple(s, 0, 0)) - project.begin() - 1;
+        dp[i] = max(dp[i-1], r);
+        if(last>=0)
+            dp[i] = max(dp[last] + r, dp[i]);
     }
 
-    for(auto p : project){
-        //cout<<p.second<<"# ";
-        if(dp.upper_bound(p.first.second) == dp.end() && (!dp.size() || p.second > dp.begin()->first) ){
-            dp[p.first.first] = max((long long)dp[p.first.first], (long long)p.second);
-        }
-        else if(dp.upper_bound(p.first.second) != dp.end()){
-            long long time = p.first.first;
-            long long money = dp.upper_bound(p.first.second)->second + p.second;
-            if(dp.lower_bound(time) == dp.end() || dp.lower_bound(time)->second < money){
-                dp[time] = money;
-                auto k = dp.find(time);
-                while(k != dp.begin() && money > k->second){
-                    dp.erase(--k);
-                    k = dp.find(time);
-                }
-                if(dp.begin()->second < money)
-                    dp.erase(dp.begin());
-            }
-        }
-        /*for(auto k : dp)
-            cout<<k.first<<","<<k.second<<" ";
-        cout<<"\n";*/
-    }
-
-    cout<<dp.begin()->second<<"\n";;
+    cout<<dp[n-1]<<"\n";
 
     return 0;
 }
