@@ -3,57 +3,37 @@ using namespace std;
 
 #define MAX 200100
 
+typedef long long ull;
+
 vector<int> adj[MAX];
 vector<int> to[MAX];
 
-set<int> actual;
-set<int> last;
+int in[MAX];
+int out[MAX];
+ull ans[MAX];
+ull up[MAX];
 
-int ans[MAX];
-
-int dfs(int v, int p = 0){
-
-    int ans = 0;
-    //::ans[v] = ::ans[p];
-
-    if(actual.find(v)!=actual.end()){
-        actual.erase(v);
-        last.insert(v);
-    }
-
-    for(int u : to[v]){
-        if(last.find(u)==last.end()){
-            actual.insert(u);
-        }
-    }
+ull dfs(int v, int p = 0){
 
     for(int u : adj[v]){
         if(u != p){
-            ans += dfs(u, v);
+            ::ans[v]+=dfs(u, v);
         }
     }
 
-    for(int u : to[v]){
-        if(last.find(u)==last.end()){
-            ans++;
-        }
-    }
-
-    ::ans[v] += ans;
-
-    return ans;
-
+    //cout<<v<<" "<<p<<"#\n";
+    return ans[v]+up[v];
 }
 
 int d[MAX];
 set <pair<int, int>, greater<pair<int, int>>> level[MAX]; //time, id
-int t[MAX];
 
-int T = 0;
+int t = 0;
 void dfs2(int v, int p=-1){
 
-    t[v] = T;
-    level[d[v]].insert( {T++, v} );
+    in[v] = t;
+    //d[v] = t;
+    level[d[v]].insert( {t++, v} );
 
     for(int u : adj[v]){
         if(u!=p){
@@ -61,16 +41,18 @@ void dfs2(int v, int p=-1){
             dfs2(u, v);
         }
     }
+
+    out[v] = t++;
 }
 
 
 //si LCA(a, b)!=a && LCA(a, b)!=b entonces ans[LCA(a, b)]--;
 bool common(int a, int b, int m){
-    if(m >= min(d[a], d[b]))
+    if(m > min(d[a], d[b]))
         return false;
 
-    auto A = level[m].lower_bound({a, INT_MAX});
-    auto B = level[m].lower_bound({b, INT_MAX});
+    auto A = level[m].lower_bound({in[a], INT_MAX});
+    auto B = level[m].lower_bound({in[b], INT_MAX});
 
     return A==B;
 }
@@ -80,7 +62,7 @@ int LCA(int a, int b, int l, int r){ //[l, r)
 
     if(l+1>=r){
         //cout<<l<<"#\n";
-        return level[l].lower_bound({a, INT_MAX})->second;
+        return level[l].lower_bound({in[a], INT_MAX})->second;
     }
 
     int m = (l+r)/2;
@@ -91,6 +73,8 @@ int LCA(int a, int b, int l, int r){ //[l, r)
 
 vector<pair<int, int>> query;
 int main(){
+    ios_base::sync_with_stdio(0); cin.tie(0);
+
     int n, m;
     cin>>n>>m;
 
@@ -107,32 +91,54 @@ int main(){
         query.push_back({a, b});
     }
 
-    dfs(1);
     dfs2(1);
+    //dfs(1);
 
+    //cout<<"###\n";
     for(auto q : query){
         int a = q.first, b = q.second;
-        if(a==b) continue;
+
         int lca = LCA(a, b, 0, min(d[a], d[b])+1);
-        //cout<<a<<" "<<b<<" "<<lca<<"\n";
-        if(a!=lca && b != lca)
-            ans[lca]--;
+
+        //cout<<a<<" "<<b<<" "<<lca<<"$\n";
+
+        ans[lca]--;
+        up[lca]--;
+        ans[a]++;
+        ans[b]++;
     }
+
+    dfs(1);
 
     for(int i=1; i<=n; i++)
         cout<<ans[i]<<" ";
     cout<<"\n";
+    //cout<<ans[4]<<"\n";
 
     return 0;
 }
 
 /*
+10 10
+8 2
+9 8
 5 3
-1 2
-1 3
-3 4
-3 5
-1 3
+2 10
+3 6
+1 6
+7 4
+5 4
+4 2
+
+8 9
+6 4
+3 2
+10 5
+5 3
+3 10
 2 5
-1 4
+3 2
+2 3
+4 4
+
 */
