@@ -46,7 +46,6 @@ void dfs2(int v, int p=-1){
 }
 
 
-//si LCA(a, b)!=a && LCA(a, b)!=b entonces ans[LCA(a, b)]--;
 bool common(int a, int b, int m){
     if(m > min(d[a], d[b]))
         return false;
