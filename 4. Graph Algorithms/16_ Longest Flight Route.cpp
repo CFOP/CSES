@@ -25,20 +25,18 @@ int main(){ ios_base::sync_with_stdio(0); cin.tie(0);
 
     priority_queue <pii, vector<pii>, greater<pii>> nxt; //nb, v
     nxt.push({0, 1}); dp[1] = 1;
-    for(int i=2; i<=n; i++)
-        nxt.push({nb[i], i});
+    for(int i=1; i<n; i++)
+        if(!nb[i])nxt.push({nb[i], i});
 
     while(nxt.size()){
         int v = nxt.top().second; nxt.pop();
-
-        if(!dp[v]) continue;
 
         if(visited[v]) continue;
         visited[v]=true;
 
         for(int u : adj[v]){
-            if(visited[u]) continue; //que procd??
-            dp[u] = max(dp[v]+1, dp[u]);
+            if(dp[v])
+                dp[u] = max(dp[v]+1, dp[u]);
             nxt.push({--nb[u], u});
         }
     }
