@@ -13,6 +13,7 @@ struct Node {
 
 	Node *l = 0, *r = 0;
 	ll lo, hi, mset = inf, madd = 0, val = -inf;
+	ll lo, hi, mset = inf, madd = 0, val = -inf;
 	Node(int lo,int hi):lo(lo),hi(hi){} // Large interval of -inf
 	Node(vi& v, int lo, int hi) : lo(lo), hi(hi) {
 		if (lo + 1 < hi) {
@@ -59,6 +60,7 @@ struct Node {
 			l->add(lo,hi,madd), r->add(lo,hi,madd), madd = 0;
 	}
 };
+
 
 int main(){
     ios_base::sync_with_stdio(0); cin.tie(0);
